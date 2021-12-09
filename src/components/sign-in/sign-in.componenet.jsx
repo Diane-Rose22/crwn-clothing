@@ -1,8 +1,8 @@
 import React from 'react';
+import {connect} from "react-redux";
 import FormInput from "../form-input/form-input.component";
 import CustomButton from "../custom-button/custom-button.component";
-import {signInWithGoogle} from "../../firebase/firebase.utils";
-import {auth} from "../../firebase/firebase.utils";
+import {googleSignInStart, emailSignInStart} from "../../redux/user/user.actions";
 
 import './sign-in.styles.scss';
 
@@ -18,15 +18,10 @@ class Signin extends React.Component {
 
     handleSubmit = event => {
         event.preventDefault();
-
         const {email, password} = this.state;
+        const {dispatchEmailSignInStart} = this.props;
 
-        try {
-            auth.signInWithEmailAndPassword(email, password);
-            this.setState({email: '', password: ''});
-        } catch (error) {
-            console.log(error);
-        }
+        dispatchEmailSignInStart(email, password);
     }
 
     handleChange = (event) => {
@@ -35,6 +30,7 @@ class Signin extends React.Component {
     }
 
     render() {
+        const {dispatchGoogleSignInStart} = this.props;
         return <div className={'sign-in'}>
             <h2>I already have an account</h2>
             <span>Sign in with your email and password</span>
@@ -47,11 +43,17 @@ class Signin extends React.Component {
 
                 <div className={'buttons'}>
                     <CustomButton type={'submit'}>Sign In</CustomButton>
-                    <CustomButton onClick={signInWithGoogle} isGoogleSignin>Sign In With Google</CustomButton>
+                    <CustomButton type={'button'} onClick={dispatchGoogleSignInStart}>Sign In With Google</CustomButton>
                 </div>
             </form>
         </div>
     }
 }
 
-export default Signin;
+const mapDispatchToProps = dispatch => ({
+    dispatchGoogleSignInStart: () => dispatch(googleSignInStart()),
+    dispatchEmailSignInStart: (email, password) => dispatch(emailSignInStart({email, password})),
+});
+
+
+export default connect(null, mapDispatchToProps)(Signin);
