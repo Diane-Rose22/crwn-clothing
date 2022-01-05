@@ -1,10 +1,9 @@
 import React, {useEffect} from 'react';
 import {Route} from 'react-router-dom';
-import {connect} from 'react-redux';
-import {createStructuredSelector} from "reselect";
+import {useSelector, useDispatch} from 'react-redux';
 
 import {fetchCollectionsStart} from "../../redux/shop/shop.actions";
-import {selectIsCollectionFetching, selectIsColectionsLoaded} from "../../redux/shop/shop.selector";
+import {selectIsColectionsLoaded} from "../../redux/shop/shop.selector";
 import WithSpinner from "../../components/with-spinner/with-spinner.component";
 import CollectionsOverview from "../../components/collections-overview/collections-overview.component";
 import CollectionPage from "../collection/collection.component";
@@ -12,11 +11,13 @@ import CollectionPage from "../collection/collection.component";
 const CollectionsOverviewWithSpinner = WithSpinner(CollectionsOverview);
 const CollectionPageWithSpinner = WithSpinner(CollectionPage);
 
-const ShopPage = ({match, isCollectionLoaded, fetchCollectionsStart}) => {
+const ShopPage = ({match}) => {
+    const isCollectionLoaded = useSelector(selectIsColectionsLoaded);
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        fetchCollectionsStart();
-    }, [fetchCollectionsStart]);
+        dispatch(fetchCollectionsStart());
+    }, [dispatch]);
 
     return (
         <div className={
@@ -31,12 +32,4 @@ const ShopPage = ({match, isCollectionLoaded, fetchCollectionsStart}) => {
     )
 }
 
-const mapStateToProps = createStructuredSelector({
-    isCollectionFetching: selectIsCollectionFetching,
-    isCollectionLoaded: selectIsColectionsLoaded,
-})
-const mapDispatchToProps = (dispatch) => ({
-    fetchCollectionsStart: () => dispatch(fetchCollectionsStart())
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(ShopPage);
+export default ShopPage;
